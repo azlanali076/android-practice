@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.practice.adapter.CustomerAdapter
+import com.example.practice.db.AppDatabase
 import com.example.practice.models.Customer
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -25,27 +26,29 @@ class MainActivity : AppCompatActivity() {
 //        customers.add(Customer("Def","def@gmail.com","admin123","+11231231234"))
 //        customers.add(Customer("Ghi","ghi@gmail.com","admin123","+11231231234"))
 
-        val sharedPref: SharedPreferences = getSharedPreferences("MY_SHARED_PREF",Context.MODE_PRIVATE)
-
-        val customersString = sharedPref.getString("customers","[]");
-
-        val gson = Gson()
-
-        val type = object: TypeToken<ArrayList<Customer>>() {}.type
-        val customers: ArrayList<Customer> = gson.fromJson(customersString,type);
-
-        if(customers.size == 0){
-            customers.add(Customer("Azlan","azlan@gmail.com","admin123","12312312345"));
-            val newCustomersString = gson.toJson(customers);
-            with (sharedPref.edit()) {
-                putString("customers",newCustomersString)
-                apply()
-            }
-        }
+//        val sharedPref: SharedPreferences = getSharedPreferences("MY_SHARED_PREF",Context.MODE_PRIVATE)
+//
+//        val customersString = sharedPref.getString("customers","[]");
+//
+//        val gson = Gson()
+//
+//        val type = object: TypeToken<ArrayList<Customer>>() {}.type
+//        val customers: ArrayList<Customer> = gson.fromJson(customersString,type);
+//
+//        if(customers.size == 0){
+//            customers.add(Customer("Azlan","azlan@gmail.com","admin123","12312312345"));
+//            val newCustomersString = gson.toJson(customers);
+//            with (sharedPref.edit()) {
+//                putString("customers",newCustomersString)
+//                apply()
+//            }
+//        }
 
 //        Toast.makeText(this,customersString,Toast.LENGTH_SHORT).show()
-
-        val customersAdapter = CustomerAdapter(customers);
+        val customers = AppDatabase.getInstance(this).customerDao().getAll()
+        val customersString = Gson().toJson(customers)
+        val newCustomers: ArrayList<Customer> = Gson().fromJson(customersString,object: TypeToken<ArrayList<Customer>>(){}.type)
+        val customersAdapter = CustomerAdapter(newCustomers);
 
         rView.adapter = customersAdapter
         rView.layoutManager = LinearLayoutManager(this)

@@ -8,6 +8,7 @@ import android.text.Html
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.practice.db.AppDatabase
 import com.example.practice.models.Customer
 import kotlinx.android.synthetic.main.activity_add_customer.*
 import com.google.gson.Gson
@@ -26,16 +27,17 @@ class AddCustomerActivity : AppCompatActivity() {
             if(name.toString() == "" || email.toString() == "" || password.toString() == "" || phone.toString() == ""){
                 Toast.makeText(this,Html.fromHtml("<font color='#000'>All fields are required</font>"),Toast.LENGTH_SHORT).show()
             }else{
-                val sharedPref: SharedPreferences = getSharedPreferences("MY_SHARED_PREF", Context.MODE_PRIVATE)
-                val customersString = sharedPref.getString("customers","[]")
-                val customers: ArrayList<Customer> =
-                    Gson().fromJson(customersString,object: TypeToken<ArrayList<Customer>>(){}.type)
-                val newCustomer = Customer(name,email,password,phone)
-                customers.add(newCustomer)
-                with (sharedPref.edit()){
-                    putString("customers",Gson().toJson(customers))
-                    apply()
-                }
+                AppDatabase.getInstance(this).customerDao().insert(Customer(name=name,email=email,password=password,phone=phone))
+//                val sharedPref: SharedPreferences = getSharedPreferences("MY_SHARED_PREF", Context.MODE_PRIVATE)
+//                val customersString = sharedPref.getString("customers","[]")
+//                val customers: ArrayList<Customer> =
+//                    Gson().fromJson(customersString,object: TypeToken<ArrayList<Customer>>(){}.type)
+//                val newCustomer = Customer(name,email,password,phone)
+//                customers.add(newCustomer)
+//                with (sharedPref.edit()){
+//                    putString("customers",Gson().toJson(customers))
+//                    apply()
+//                }
                 Toast.makeText(this,Html.fromHtml("<font color='#000'>Customer Added Successfully!</font>"),Toast.LENGTH_SHORT).show()
             }
 
